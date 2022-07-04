@@ -22,7 +22,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
@@ -36,17 +35,9 @@ import org.junit.runner.notification.RunListener;
  */
 public class ResultListener extends RunListener {
 
-    private static final Logger logger = Logger.getLogger(ResultListener.class.getName());
-
-    private static final String GREEN = "\033[0;32m";
-    private static final String GREEN_BOLD = "\033[1;32m";
-
-    private static final String RED = "\033[0;31m";
-    public static final String RED_BOLD = "\033[1;31m";
-
     @Override
     public void testRunFinished(Result result) throws Exception {
-        String home = System.getProperty("test.home");
+        String home = System.getProperty("resultlistener.home");
 
         try (RandomAccessFile file = new RandomAccessFile(home + "/test_summary.txt", "rw");
                 FileChannel channel = file.getChannel();
@@ -73,41 +64,14 @@ public class ResultListener extends RunListener {
                     failureCount + " " +
                     ignoreCount ;
 
-            String color1 = getColor1(assumptionFailureCount, failureCount);
-            String color2 = getColor2(assumptionFailureCount, failureCount);
-
-            logger.info(
-                color1 +
-                "\n########################################################\n" +
-                color2 +
-                "Tests run: " + runCount +
-                ", Failures: " + assumptionFailureCount +
-                ", Errors: " + failureCount +
-                ", Skipped: " + ignoreCount +
-                color1 +
-                "\n########################################################\n" +
-                "\033[0m");
-
             writeString(Path.of(home + "/test_summary.txt"), content);
         }
 
-    }
-
-    String getColor1(int assumptionFailureCount, int failureCount) {
-        if (assumptionFailureCount > 0 || failureCount > 0) {
-            return RED;
+        if (Boolean.valueOf(System.getProperty("resultlistener.print", "true"))) {
+            org.omnifaces.junit.ResultPrinter.printResult();
         }
 
-        return GREEN;
     }
 
-    String getColor2(int assumptionFailureCount, int failureCount) {
-        if (assumptionFailureCount > 0 || failureCount > 0) {
-            return RED_BOLD;
-        }
-
-        return GREEN_BOLD;
-
-    }
 
 }
