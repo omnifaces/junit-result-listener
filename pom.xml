@@ -20,7 +20,7 @@
 
     <groupId>org.omnifaces</groupId>
     <artifactId>junit-result-listener</artifactId>
-    <version>1.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>JUnit Result Listener</name>
     <description>Result and progress listener for Junit tests</description>
